@@ -8,7 +8,7 @@ void main() {
     final unawaitedFinder = find.byValueKey('unawaited');
     final seqFinder = find.byValueKey('sequential');
 
-    FlutterDriver driver;
+    late FlutterDriver driver;
 
     setUpAll(() async => driver = await FlutterDriver.connect());
 
@@ -41,7 +41,7 @@ void main() {
       await driver.tap(unawaitedFinder);
 
       final t0 = DateTime.now();
-      DateTime t1;
+      late DateTime t1;
 
       int i = 600;
       bool success = false;
