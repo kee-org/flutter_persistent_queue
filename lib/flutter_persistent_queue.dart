@@ -107,6 +107,14 @@ class PersistentQueue {
   /// Preview a [List] of currently buffered items, without any dequeuing.
   Future<List> toList() => _flushWrap(false);
 
+  /// Force a fresh read from underlying permenant storage. Useful when file may
+  /// have been changed from another process or thread.
+  Future<void> reinitialise() async {
+    final storage = LocalStorage(filename, null, null, true);
+    await storage.ready;
+    _ready = _defer(_reload);
+  }
+
   _Config get _config => _configs[filename]!;
   bool get _isExpired => _deadline != null && _nowUtc.isAfter(_deadline!);
   DateTime get _nowUtc => DateTime.now().toUtc();
@@ -264,12 +272,11 @@ class _BufferItem<T> {
 }
 
 class _Config {
-  _Config({
-    required this.flushAt,
-    required this.flushTimeout,
-    required this.maxLength,
-    this.onFlush
-  });
+  _Config(
+      {required this.flushAt,
+      required this.flushTimeout,
+      required this.maxLength,
+      this.onFlush});
 
   final int flushAt;
   final Duration flushTimeout;
